@@ -1,2 +1,2 @@
-# draft_game
-# draft_game
+# Draft Game API
+FastAPI project to serve Draft Game Assets
