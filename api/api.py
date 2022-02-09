@@ -31,11 +31,11 @@ async def shutdown():
 
 @app.get("/")
 async def root():
-    return {"messagew": "Welcome to Draft Game API"}
+    return {"message": "Welcome to Draft Game API"}
 
 
 @app.get("/cards/", response_model=List[Card])
-async def get_cards(limit: int = 10):
+async def get_cards(limit: int = 100):
     query = f"SELECT * FROM cards;"
     results = await database.fetch_all(query=query)
     return results[:limit]
