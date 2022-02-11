@@ -4,12 +4,31 @@ from typing import List
 import databases
 
 from fastapi import FastAPI
+from fastapi.openapi.utils import get_openapi
 from pydantic import BaseModel
 from sqlalchemy import Column, Integer, MetaData, String, Table, create_engine, func
 
 
 # Initialize api
 app = FastAPI()
+
+# Define openAPI spec
+
+
+def custom_openapi():
+    if app.openapi_schema:
+        return app.openapi_schema
+    openapi_schema = get_openapi(
+        title="Draft Game API",
+        version="0.1.0",
+        description="API for Draft Game Card Assets",
+        routes=app.routes,
+    )
+    app.openapi_schema = openapi_schema
+    return app.openapi_schema
+
+
+app.openapi = custom_openapi
 
 # Define Types
 class Card(BaseModel):
@@ -63,6 +82,7 @@ async def shutdown():
 
 @app.get("/")
 async def root():
+    """Draft Game API Home Page"""
     return {"message": "Welcome to Draft Game API"}
 
 
@@ -73,6 +93,9 @@ async def get_cards(
     effect: str = None,
     limit: int = 100,
 ):
+    """
+    Get list of Cards
+    """
     query = cards.select()
     if card_name:
         query = query.where(cards.c.name == card_name)
@@ -86,6 +109,7 @@ async def get_cards(
 
 @app.get("/cards/{card_name}/", response_model=Card)
 async def get_card(card_name: str):
+    """Get single card by name"""
     query = cards.select().where(cards.c.name == card_name)
     results = await database.fetch_one(query=query)
     return results
@@ -93,6 +117,7 @@ async def get_card(card_name: str):
 
 @app.get("/random-cards/", response_model=List[Card])
 async def get_random_cards(limit: int = 1):
+    """Get random list of cards. Configurable limit"""
     query = cards.select().order_by(func.random()).limit(limit)
     results = await database.fetch_all(query=query)
     return results
