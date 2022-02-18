@@ -46,6 +46,13 @@ class CardType(str, Enum):
     pirate = "Pirate"
 
 
+class CreateCard(BaseModel):
+    name: str
+    value: int
+    card_type: CardType
+    effect: str
+
+
 # Initialize Database
 DATABASE_URL = "sqlite:///./app/cards.db"
 database = databases.Database(DATABASE_URL)
@@ -107,6 +114,16 @@ async def get_cards(
     return results[:limit]
 
 
+@app.post("/cards/", response_model=Card)
+async def create_card(card: CreateCard):
+    """Create a card"""
+    query = cards.insert().values(
+        name=card.name, card_type=card.card_type, effect=card.effect, value=card.value
+    )
+    last_record_id = await database.execute(query)
+    return {**card.dict(), "id": last_record_id}
+
+
 @app.get("/cards/{card_name}/", response_model=Card)
 async def get_card(card_name: str):
     """Get single card by name"""
@@ -115,8 +132,16 @@ async def get_card(card_name: str):
     return results
 
 
+@app.delete("/cards/{card_name}/", response_model=Card)
+async def get_card(card_name: str):
+    """Get single card by name"""
+    query = cards.delete().where(cards.c.name == card_name)
+    results = await database.fetch_one(query=query)
+    return results
+
+
 @app.get("/random-cards/", response_model=List[Card])
-async def get_random_cards(limit: int = 1):
+async def get_random_cards(limit: int = 7):
     """Get random list of cards. Configurable limit"""
     query = cards.select().order_by(func.random()).limit(limit)
     results = await database.fetch_all(query=query)
