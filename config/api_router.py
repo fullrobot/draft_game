@@ -2,11 +2,11 @@ from django.conf import settings
 from rest_framework.routers import DefaultRouter
 from rest_framework.routers import SimpleRouter
 
-from draft_game.users.api.views import UserViewSet
+from draft_game.apps.cards.api.views import CardViewSet
 
 router = DefaultRouter() if settings.DEBUG else SimpleRouter()
 
-router.register("users", UserViewSet)
+router.register("cards", CardViewSet)
 
 
 app_name = "api"

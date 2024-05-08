@@ -1,11 +1,29 @@
 from rest_framework import serializers
 
-from draft_game.users.models import User
+from draft_game.apps.cards.models import Card
+from draft_game.apps.cards.models import CardEffect
 
 
-class UserSerializer(serializers.ModelSerializer[User]):
+class CardEffectSerializer(serializers.ModelSerializer[CardEffect]):
+    effect_types = serializers.StringRelatedField(many=True)
+
     class Meta:
-        model = User
-        fields = ["name", "url"]
+        model = CardEffect
+        fields = [
+            "effect_types",
+            "effect_text",
+        ]
 
-        extra_kwargs = {"url": {"view_name": "api:user-detail", "lookup_field": "pk"}}
+
+class CardSerializer(serializers.ModelSerializer[Card]):
+    card_type = serializers.StringRelatedField()
+    effect = CardEffectSerializer()
+
+    class Meta:
+        model = Card
+        fields = [
+            "name",
+            "value",
+            "effect",
+            "card_type",
+        ]

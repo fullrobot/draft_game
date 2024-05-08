@@ -278,3 +278,5 @@ draft_game/media/
 .env
 .envs/*
 .env/.local/*
+
+**/fixtures/
