@@ -16,11 +16,7 @@ from merge_production_dotenvs_in_dotenv import merge
         (["X=x\n", "Y=y", "Z=z\n"], "X=x\n\nY=y\nZ=z\n\n"),
     ],
 )
-def test_merge(
-    tmp_path: Path,
-    input_contents: list[str],
-    expected_output: str,
-):
+def test_merge(tmp_path: Path, input_contents: list[str], expected_output: str):
     output_file = tmp_path / ".env"
 
     files_to_merge = []

@@ -277,4 +277,3 @@ draft_game/media/
 .ipython/
 .env
 .envs/*
-!.envs/.local/
