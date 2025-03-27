@@ -1,19 +1,16 @@
 
 # pull the official docker image
-FROM python:3.11.11-alpine
-
+FROM python:3.12
 # set env variables
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
-# copy project
-COPY ./requirements.txt ./requirements.txt
+RUN apt update && \
+    apt install -y postgresql-client
 
-# install dependencies
-RUN pip install -r requirements.txt 
-
-# copy project
-COPY . .
-
-# set work directory
 WORKDIR /app
+
+COPY ./requirements.txt ./requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
