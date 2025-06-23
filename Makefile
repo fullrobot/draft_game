@@ -1,3 +1,5 @@
+.PHONY: install run load-db up make-migrations
+
 install:
 	uv venv
 	uv sync

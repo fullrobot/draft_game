@@ -39,8 +39,22 @@ class CardSchema(BaseModel):
     effect: EffectSchema
 
 
+class CreateEffect(BaseModel):
+    description: str
+    effect_type: EffectType
+    value_change: int
+    condition: str
+    game_effect: str
+
+    class Config:
+        from_attributes = True
+
+
 class CreateCard(BaseModel):
     name: str
     value: int
     card_type: CardType
-    effect: EffectSchema
+    effect: CreateEffect
+
+    class Config:
+        from_attributes = True

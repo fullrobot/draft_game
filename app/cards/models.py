@@ -5,7 +5,7 @@ from slugify import slugify
 from sqlalchemy import Enum, ForeignKey, Integer
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.models import Base
+from app.database.init_db import Base
 
 
 class EffectType(str, enum.Enum):
@@ -100,5 +100,5 @@ class Card(Base):
             "name": self.name,
             "value": self.value,
             "card_type": self.card_type,
-            "effect": self.effect.serialize,
+            "effect": self.effect,
         }

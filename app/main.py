@@ -1,35 +1,38 @@
-from fastapi import FastAPI
-from fastapi.openapi.utils import get_openapi
+from contextlib import asynccontextmanager
 
-from app.cards.router import router as cardrouter
-from app.database import engine
-from app.models import Base
+from fastapi import APIRouter, FastAPI
 
-# Initialize api
-app = FastAPI()
-app.include_router(cardrouter)
-
-# Create tables
-Base.metadata.create_all(bind=engine)
+from app.api.v1.router import router as v1_router
+from app.database.init_db import create_tables
 
 
-# Define openAPI spec
-def custom_openapi():
-    if app.openapi_schema:
-        return app.openapi_schema
-    openapi_schema = get_openapi(
-        title="Draft Game API",
-        version="0.1.0",
-        description="API for Draft Game Card Assets",
-        routes=app.routes,
-    )
-    app.openapi_schema = openapi_schema
-    return app.openapi_schema
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    create_tables()  # Initializes tables (SQLAlchemy)
+    print("✅ Application started and database tables created!")
+    yield
+    print("🛑 Application shutting down!")
 
 
-app.openapi = custom_openapi
+app = FastAPI(
+    title="Draft Game API",
+    description="API for managing a card draft game",
+    version="0.1.0",
+    docs_url="/api",
+    lifespan=lifespan,
+)
+
+api_root_router = APIRouter(prefix="/api")
+api_root_router.include_router(v1_router)
+app.include_router(api_root_router)
 
 
-@app.get("/")
-async def read_root():
-    return {"Hello": "World"}
+@app.get("/health")
+def health_check():
+    return {"status": "healthy"}
+
+
+if __name__ == "__main__":
+    import uvicorn
+
+    uvicorn.run(app, host="0.0.0.0", port=8000)
