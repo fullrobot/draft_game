@@ -11,7 +11,6 @@ load-db:
 	python scripts/setup_db.py --input assets/cards.json
 
 up:
-	uv pip compile --output-file requirements.txt pyproject.toml
 	docker compose up --build -d
 
 make-migrations:
